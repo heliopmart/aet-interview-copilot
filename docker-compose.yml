@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: devpassword123
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata_interview:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d
@@ -28,12 +28,11 @@ services:
     environment:
       - OLLAMA_FLASH_ATTENTION=1
       - OLLAMA_KEEP_ALIVE=60m
+      - OLLAMA_NUM_PARALLEL=1
     volumes:
       - ollama_models:/root/.ollama
     deploy:
       resources:
-        limits:
-          memory: 1536M
         reservations:
           devices:
             - driver: nvidia
