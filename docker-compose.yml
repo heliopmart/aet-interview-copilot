@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: aet_interview_db
+    restart: unless-stopped
+    command: postgres -c shared_buffers=128MB -c work_mem=8MB -c max_connections=30
+    environment:
+      POSTGRES_DB: aet_interview
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devpassword123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_interview:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: aet_interview_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_KEEP_ALIVE=60m
+    volumes:
+      - ollama_models:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  pgdata_interview:
+  ollama_models:
